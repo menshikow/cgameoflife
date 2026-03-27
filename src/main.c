@@ -1,67 +1,52 @@
-// TODO
-/*
-
-1. Returning a local array in generate_cell() (`int cell[x][y]; return cell;`) –
-invalid in C.
-2. **`int cell[][]` in `check_neighbors()`** – C requires at least the second
-dimension (`int cell[HEIGHT][WIDTH]`).
-3. **`return 0;` in a void function** – invalid.
-4. **Declaring a new grid every loop iteration in `main()`** – loses previous
-generation state.
-5. **`srand(time(NULL))` inside a function** – should only run once in `main()`.
-6. **Reinitializing grid inside `grid_update()` every call** – overwrites
-current state.
-7. **Using loops like `for (int i = 0; i < grid[HEIGHT]; i++)`** – must use the
-size variable, not `grid[HEIGHT]`.
-
-*/
+// TOOD: create a visualisation
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 enum State {
   DEAD = 0,
   ALIVE = 1,
 };
 
-const int HEIGHT = 100;
-const int WIDTH = 100;
+#define SPEED 1 // amount of alive cells each frame
+#define WIDTH 100
+#define HEIGHT 50
 
-void grid_update(int grid[][]) {
-
+void screen_print(int grid[HEIGHT][WIDTH]) {
   for (int i = 0; i < HEIGHT; i++) {
     for (int j = 0; j < WIDTH; j++) {
-      if (grid[i][j] == DEAD) {
-        printf(".");
-      } else {
-        printf("*");
-      }
+      printf(grid[i][j] == DEAD ? "." : "*");
     }
     printf("\n");
   }
 }
 
-void generate_cell(int grid[HEIGHT][WIDTH]) {
-  srand(time(NULL));
+void generate_cells(int grid[HEIGHT][WIDTH], int speed) {
 
-  int x = rand() % WIDTH;
-  int y = rand() % HEIGHT;
+  for (int i = 0; i < speed; i++) {
+    int y = rand() % HEIGHT;
+    int x = rand() % WIDTH;
 
-  int cell[x][y];
-  return cell;
+    grid[y][x] = ALIVE;
+  }
 }
 
-void check_neighbors(int cell[][]) { return 0; }
+void check_neighbors() {}
 
 int main() {
-  grid_update();
+  srand(time(NULL)); // seeding the rnd
+
+  int grid[HEIGHT][WIDTH] = {0}; // initialize the grid
 
   while (true) {
-    int cell[HEIGHT][WIDTH];
-    generate_cell(cell);
-    check_neighbors(cell);
+    system("clear");
+    generate_cells(grid, SPEED);
+    screen_print(grid);
+    sleep(1); // one second delay between frames
   }
+
   return 0;
 }
